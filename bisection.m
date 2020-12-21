@@ -197,14 +197,14 @@ syms x
 fx = evalin(symengine, get(handles.expression, 'string'));
 tic
 x = xl;
-fxl = subs(fx);
+fxl = vpa(subs(fx));
 x = xu;
-fxu = subs(fx);
+fxu = vpa(subs(fx));
 iter_count = 0;
 if (fxl * fxu <= 0)
     xr = xl + xu / 2;
     x = xr;
-    fxr = subs(fx);
+    fxr = vpa(subs(fx));
     if (fxl*fxr > 0)
         xl = xr;
     else
@@ -217,9 +217,9 @@ if (fxl * fxu <= 0)
        xr = (xl+xu)/2;
        ea = abs((xr-xr_old)/xr);
        x = xl;
-       fxl = subs(fx);
+       fxl = vpa(subs(fx));
        x = xr;
-       fxr = subs(fx);
+       fxr = vpa(subs(fx));
        test_val = fxl*fxr;
        if (test_val < 0)
            xu = xr;
