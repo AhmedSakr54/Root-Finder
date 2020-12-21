@@ -22,7 +22,7 @@ function varargout = bisection(varargin)
 
 % Edit the above text to modify the response to help bisection
 
-% Last Modified by GUIDE v2.5 21-Dec-2020 00:54:12
+% Last Modified by GUIDE v2.5 21-Dec-2020 19:34:11
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -167,6 +167,22 @@ end
 
 % --- Executes on button press in solve.
 function solve_Callback(hObject, eventdata, handles)
+if (handles.file.Value == 1)
+    if get(handles.filename, 'string') == "" || exist(get(handles.filename, 'string'), 'file') ~= 2
+        set(handles.result, 'string', "enter a correct file name");
+        errorHandle(handles);
+        return;
+    end
+    fid = fopen(get(handles.filename, 'string'));
+    txt = textscan(fid, "%s", 'delimiter', '\n');
+    set(handles.expression, 'string', txt{1}{1});
+    set(handles.xl, 'string', txt{1}{2});
+    set(handles.xu, 'string', txt{1}{3});
+    set(handles.eps, 'string', txt{1}{4});
+    set(handles.max_iter, 'string', txt{1}{5});
+    fclose(fid);
+end
+handles.iterations.ForegroundColor = "black";
 xlString = get(handles.xl, 'string');
 xuString = get(handles.xu, 'string');
 xl = -1;
@@ -288,6 +304,72 @@ end
 function back_Callback(hObject, eventdata, handles)
 menu;
 close(bisection);
+
+
+% --- Executes on button press in file.
+function file_Callback(hObject, eventdata, handles)
+% hObject    handle to file (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+if handles.writeExp.Value == 1
+    handles.writeExp.Value = 0;
+    switchExpression(handles, "off");
+    handles.filename.Enable = "on";
+    errorHandle(handles);
+    set(handles.result, 'string', "");
+end
+warning = sprintf("THIS IS IMPORTANT!!!!\nYou have to make sure that the file name has the extension .txt\nIn the file the\n    The first line is the Expression f(x)\n    The second line is xl\n    The third line is xu\n    The fourth line is eps\n    The fifth line is max_iter");
+set(handles.iterations, 'string', warning);
+handles.iterations.ForegroundColor = "red";
+% Hint: get(hObject,'Value') returns toggle state of file
+
+
+
+function filename_Callback(hObject, eventdata, handles)
+% hObject    handle to filename (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of filename as text
+%        str2double(get(hObject,'String')) returns contents of filename as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function filename_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to filename (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in writeExp.
+function writeExp_Callback(hObject, eventdata, handles)
+% hObject    handle to writeExp (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+if handles.file.Value == 1
+    handles.file.Value = 0;
+    handles.filename.Enable = "off";
+    switchExpression(handles, "on");
+    set(handles.iterations, 'string', "");
+    errorHandle(handles);
+    set(handles.result, 'string', "");
+end
+% Hint: get(hObject,'Value') returns toggle state of writeExp
+
+
+function switchExpression(handles, way)
+handles.expression.Enable = way;
+handles.xl.Enable = way;
+handles.xu.Enable = way;
+handles.eps.Enable = way;
+handles.max_iter.Enable = way;
+
 
 function errorHandle(handles)
 set(handles.iterations, 'string', "");
