@@ -148,25 +148,24 @@ x0String = get(handles.x2nd, 'string');
 xSub1String = get(handles.x1st, 'string');
 x0 = -1;
 xSub1 = -1;
-if x0String == ""
-    set(handles.result, 'string', "Please enter a second guess!");
-    set(handles.iterations, 'string', "");
-    set(handles.result, 'string', "");
-    set(handles.timeTaken, 'string', "");
-    set(handles.numiter, 'string', "");
-    set(handles.percision, 'string', "");
-else
-    x0 = str2double(x0String);
+if get(handles.expression, 'string') == ""
+    set(handles.result, 'string', "Please enter expression f(x)");
+    errorHandle(handles);
+    return;  
 end
 if xSub1String == ""
     set(handles.result, 'string', "Please enter a first guess!");
-    set(handles.iterations, 'string', "");
-    set(handles.result, 'string', "");
-    set(handles.timeTaken, 'string', "");
-    set(handles.numiter, 'string', "");
-    set(handles.percision, 'string', "");
+    errorHandle(handles);
+    return;  
 else
     xSub1 = str2double(xSub1String);
+end
+if x0String == ""
+    set(handles.result, 'string', "Please enter a second guess!");
+    errorHandle(handles);
+    return;  
+else
+    x0 = str2double(x0String);
 end
 es_symbol = evalin(symengine, get(handles.eps, 'string'));
 if get(handles.eps, 'string') == ""
@@ -264,3 +263,10 @@ function x1st_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
+
+function errorHandle(handles)
+set(handles.iterations, 'string', "");
+set(handles.timeTaken, 'string', "");
+set(handles.numiter, 'string', "");
+set(handles.percision, 'string', "");
+

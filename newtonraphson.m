@@ -146,16 +146,18 @@ end
 function solve_Callback(hObject, eventdata, handles)
 x0String = get(handles.x0, 'string');
 x0 = -1;
+if get(handles.expression, 'string') == ""
+    set(handles.result, 'string', "Please enter expression f(x)");
+    errorHandle(handles);
+    return;  
+end
 if x0String == ""
     set(handles.result, 'string', "Please enter an initial guess x0!");
-    set(handles.iterations, 'string', "");
-    set(handles.result, 'string', "");
-    set(handles.timeTaken, 'string', "");
-    set(handles.numiter, 'string', "");
-    set(handles.percision, 'string', "");
+    errorHandle(handles);
+    return;  
 else
-    x0 = str2double(x0String);
-end
+x0 = str2double(x0String);
+
 es_symbol = evalin(symengine, get(handles.eps, 'string'));
 if get(handles.eps, 'string') == ""
     eps = 0.00001;
@@ -168,6 +170,7 @@ if get(handles.max_iter, 'string') == ""
 else
     max_iter = str2double(get(handles.max_iter, 'string'));
 end
+if ((get(handles.expression, 'string')) ~= "")
 syms x
 fx = evalin(symengine, get(handles.expression, 'string'));
 dfx = diff(fx);
@@ -195,8 +198,10 @@ set(handles.result, 'string', sprintf("the root = %f", root));
 set(handles.timeTaken, 'string', sprintf("Execution time = %f", time));
 set(handles.numiter, 'string', sprintf("Number of iterations = %d", iter_count));
 set(handles.percision, 'string', sprintf("Percision = %f", ea));
-
-
+else
+    set(handles.result, 'string', "Enter an expression");
+end
+end
 
 function max_iter_Callback(hObject, eventdata, handles)
 % hObject    handle to max_iter (see GCBO)
@@ -224,3 +229,9 @@ end
 function back_Callback(hObject, eventdata, handles)
 menu;
 close(newtonraphson);
+
+function errorHandle(handles)
+set(handles.iterations, 'string', "");
+set(handles.timeTaken, 'string', "");
+set(handles.numiter, 'string', "");
+set(handles.percision, 'string', "");

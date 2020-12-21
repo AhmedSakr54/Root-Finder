@@ -171,13 +171,22 @@ xlString = get(handles.xl, 'string');
 xuString = get(handles.xu, 'string');
 xl = -1;
 xu = -1;
+if get(handles.expression, 'string') == ""
+    set(handles.result, 'string', "Please enter expression f(x)");
+    errorHandle(handles);
+    return;
+end
 if xlString == ""
     set(handles.result, 'string', "Please enter a value for xl!");
+    errorHandle(handles);
+    return;   
 else
     xl = str2double(xlString);
 end
 if xuString == ""
     set(handles.result, 'string', "Please enter a value for xu!");
+    errorHandle(handles);
+    return;   
 else
     xu = str2double(xuString);
 end
@@ -281,3 +290,10 @@ end
 function back_Callback(hObject, eventdata, handles)
 menu;
 close(falseposition);
+
+function errorHandle(handles)
+set(handles.iterations, 'string', "");
+set(handles.timeTaken, 'string', "");
+set(handles.numiter, 'string', "");
+set(handles.percision, 'string', "");
+

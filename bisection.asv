@@ -171,22 +171,14 @@ xlString = get(handles.xl, 'string');
 xuString = get(handles.xu, 'string');
 xl = -1;
 xu = -1;
-if get(handles.expression, 'string') == ""
-    set(handles.result, 'string', "Please enter expression f(x)");
-    errorHandle(handles);
-    return;  
-end
 if xlString == ""
     set(handles.result, 'string', "Please enter a value for xl!");
-    errorHandle(handles);
-    return;  
+    return;
 else
     xl = str2double(xlString);
 end
 if xuString == ""
     set(handles.result, 'string', "Please enter a value for xu!");
-    errorHandle(handles);
-    return;  
 else
     xu = str2double(xuString);
 end
@@ -247,6 +239,7 @@ if (fxl * fxu <= 0)
     end
     root = xr;
     time = toc;
+%     results_string = sprintf("the root = %f\nExecution time = %f\nNumber of iterations = %d", root, time, iter_count);
     set(handles.iterations, 'string', show_iterations);
     set(handles.result, 'string', sprintf("the root = %f", root));
     set(handles.timeTaken, 'string', sprintf("Execution time = %f", time));
@@ -288,9 +281,3 @@ end
 function back_Callback(hObject, eventdata, handles)
 menu;
 close(bisection);
-
-function errorHandle(handles)
-set(handles.iterations, 'string', "");
-set(handles.timeTaken, 'string', "");
-set(handles.numiter, 'string', "");
-set(handles.percision, 'string', "");

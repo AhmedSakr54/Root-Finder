@@ -1,35 +1,35 @@
-function varargout = bisection(varargin)
-% BISECTION MATLAB code for bisection.fig
-%      BISECTION, by itself, creates a new BISECTION or raises the existing
+function varargout = falseposition(varargin)
+% FALSEPOSITION MATLAB code for falseposition.fig
+%      FALSEPOSITION, by itself, creates a new FALSEPOSITION or raises the existing
 %      singleton*.
 %
-%      H = BISECTION returns the handle to a new BISECTION or the handle to
+%      H = FALSEPOSITION returns the handle to a new FALSEPOSITION or the handle to
 %      the existing singleton*.
 %
-%      BISECTION('CALLBACK',hObject,eventData,handles,...) calls the local
-%      function named CALLBACK in BISECTION.M with the given input arguments.
+%      FALSEPOSITION('CALLBACK',hObject,eventData,handles,...) calls the local
+%      function named CALLBACK in FALSEPOSITION.M with the given input arguments.
 %
-%      BISECTION('Property','Value',...) creates a new BISECTION or raises the
+%      FALSEPOSITION('Property','Value',...) creates a new FALSEPOSITION or raises the
 %      existing singleton*.  Starting from the left, property value pairs are
-%      applied to the GUI before bisection_OpeningFcn gets called.  An
+%      applied to the GUI before falseposition_OpeningFcn gets called.  An
 %      unrecognized property name or invalid value makes property application
-%      stop.  All inputs are passed to bisection_OpeningFcn via varargin.
+%      stop.  All inputs are passed to falseposition_OpeningFcn via varargin.
 %
 %      *See GUI Options on GUIDE's Tools menu.  Choose "GUI allows only one
 %      instance to run (singleton)".
 %
 % See also: GUIDE, GUIDATA, GUIHANDLES
 
-% Edit the above text to modify the response to help bisection
+% Edit the above text to modify the response to help falseposition
 
-% Last Modified by GUIDE v2.5 21-Dec-2020 00:54:12
+% Last Modified by GUIDE v2.5 21-Dec-2020 15:34:19
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
 gui_State = struct('gui_Name',       mfilename, ...
                    'gui_Singleton',  gui_Singleton, ...
-                   'gui_OpeningFcn', @bisection_OpeningFcn, ...
-                   'gui_OutputFcn',  @bisection_OutputFcn, ...
+                   'gui_OpeningFcn', @falseposition_OpeningFcn, ...
+                   'gui_OutputFcn',  @falseposition_OutputFcn, ...
                    'gui_LayoutFcn',  [] , ...
                    'gui_Callback',   []);
 if nargin && ischar(varargin{1})
@@ -44,26 +44,26 @@ end
 % End initialization code - DO NOT EDIT
 
 
-% --- Executes just before bisection is made visible.
-function bisection_OpeningFcn(hObject, eventdata, handles, varargin)
+% --- Executes just before falseposition is made visible.
+function falseposition_OpeningFcn(hObject, eventdata, handles, varargin)
 % This function has no output args, see OutputFcn.
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-% varargin   command line arguments to bisection (see VARARGIN)
+% varargin   command line arguments to falseposition (see VARARGIN)
 
-% Choose default command line output for bisection
+% Choose default command line output for falseposition
 handles.output = hObject;
 
 % Update handles structure
 guidata(hObject, handles);
 
-% UIWAIT makes bisection wait for user response (see UIRESUME)
+% UIWAIT makes falseposition wait for user response (see UIRESUME)
 % uiwait(handles.figure1);
 
 
 % --- Outputs from this function are returned to the command line.
-function varargout = bisection_OutputFcn(hObject, eventdata, handles) 
+function varargout = falseposition_OutputFcn(hObject, eventdata, handles) 
 % varargout  cell array for returning output args (see VARARGOUT);
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -173,22 +173,26 @@ xl = -1;
 xu = -1;
 if get(handles.expression, 'string') == ""
     set(handles.result, 'string', "Please enter expression f(x)");
-    errorHandle(handles);
-    return;  
+    errorFlag = 1;
 end
 if xlString == ""
     set(handles.result, 'string', "Please enter a value for xl!");
-    errorHandle(handles);
-    return;  
+    errorFlag = 1;    
 else
     xl = str2double(xlString);
 end
 if xuString == ""
     set(handles.result, 'string', "Please enter a value for xu!");
-    errorHandle(handles);
-    return;  
+    errorFlag = 1;    
 else
     xu = str2double(xuString);
+end
+if errorFlag == 1
+    set(handles.iterations, 'string', "");
+    set(handles.timeTaken, 'string', "");
+    set(handles.numiter, 'string', "");
+    set(handles.percision, 'string', "");
+    return;
 end
 es_symbol = evalin(symengine, get(handles.eps, 'string'));
 if get(handles.eps, 'string') == ""
@@ -211,39 +215,44 @@ x = xu;
 fxu = vpa(subs(fx));
 iter_count = 0;
 if (fxl * fxu <= 0)
-    xr = xl + xu / 2;
-    x = xr;
-    fxr = vpa(subs(fx));
-    if (fxl*fxr > 0)
+   xr = (xu*fxl - xl*fxu)/(fxl-fxu);
+   x = xr;
+   fxr = vpa(subs(fx));
+   if (fxl*fxr > 0)
         xl = xr;
     else
-        xu = xr;
+        if (fxl*fxr < 0)
+            xu = xr;
+        end 
     end
     xr_old = xr;
     show_iterations = sprintf("xr1 = %f\n", xr);
-    iter_count = iter_count + 1;
     for i = 2:1:max_iter
-       xr = (xl+xu)/2;
-       ea = abs((xr-xr_old)/xr);
-       x = xl;
-       fxl = vpa(subs(fx));
-       x = xr;
-       fxr = vpa(subs(fx));
-       test_val = fxl*fxr;
-       if (test_val < 0)
-           xu = xr;
-       else
-           xl = xr;
-       end
-       if (test_val == 0)
-           ea = 0;
-       end
-       if (ea <= eps) 
-           break;
-       end
-       xr_old = xr;
-       show_iterations = strcat(show_iterations, sprintf("xr%d = %f\n", i, xr));
-       iter_count = iter_count + 1;
+        xr = (xu*fxl - xl*fxu)/(fxl-fxu);
+        x = xr;
+        fxr = vpa(subs(fx));
+        test_value = fxl*fxr;
+        iter_count = iter_count + 1;
+        if (test_value > 0)
+            xl = xr;
+        else
+            if (test_value < 0)
+                xu = xr;
+            end 
+        end
+        ea = abs((xr - xr_old) / xr);
+        if (test_value == 0)
+            ea = 0;
+        end
+        if (ea < eps)
+            break;
+        end
+        xr_old = xr;
+        x = xl;
+        fxl = vpa(subs(fx));
+        x = xu;
+        fxu = vpa(subs(fx));
+        show_iterations = strcat(show_iterations, sprintf("xr%d = %f\n", i, xr));
     end
     root = xr;
     time = toc;
@@ -256,9 +265,6 @@ else
     set(handles.result, 'string', "could not perform bisection method");
     set(handles.iterations, 'string', "");
 end
-
-
-
 
 
 
@@ -287,10 +293,11 @@ end
 % --- Executes on button press in back.
 function back_Callback(hObject, eventdata, handles)
 menu;
-close(bisection);
+close(falseposition);
 
-function errorHandle(handles)
+function errorHandle(hObject, eventdata, handles)
 set(handles.iterations, 'string', "");
 set(handles.timeTaken, 'string', "");
 set(handles.numiter, 'string', "");
 set(handles.percision, 'string', "");
+
